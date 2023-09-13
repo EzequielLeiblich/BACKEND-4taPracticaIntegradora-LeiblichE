@@ -73,7 +73,7 @@ export default class CartService {
         return response;
     };
 
-    async addProductToCartService(cid, pid, quantity) {
+    async addProductToCartService(cid, pid, quantity, userId) {
         let response = {}
         try {
             const product = await this.productService.getProductByIdService(pid);
@@ -81,18 +81,23 @@ export default class CartService {
                 response.statusCode = product.statusCode;
                 response.message = product.message;
             } else {
-                const resultDAO = await this.cartDao.addProductToCart(cid, product.result, quantity);
-                if (resultDAO.status === "error") {
-                    response.statusCode = 500;
-                    response.message = resultDAO.message;
-                } else if (resultDAO.status === "not found cart") {
-                    response.statusCode = 404;
-                    response.message = `No se encontro ningún carrito con ID ${cid}.`;
-                } else if (resultDAO.status === "success") {
-                    response.statusCode = 200;
-                    response.message = "Producto agregado al carrito exitosamente.";
-                    response.result = resultDAO.result;
-                };
+                if (product.result.owner === undefined || !product.result.owner === userId) {
+                    const resultDAO = await this.cartDao.addProductToCart(cid, product.result, quantity);
+                    if (resultDAO.status === "error") {
+                        response.statusCode = 500;
+                        response.message = resultDAO.message;
+                    } else if (resultDAO.status === "not found cart") {
+                        response.statusCode = 404;
+                        response.message = `No se encontro ningún carrito con ID ${cid}.`;
+                    } else if (resultDAO.status === "success") {
+                        response.statusCode = 200;
+                        response.message = "Producto agregado al carrito exitosamente.";
+                        response.result = resultDAO.result;
+                    };
+                } else if(product.result.owner === userId ){
+                    response.statusCode = 401;
+                    response.message = "No puedes agregar tus propios productos a tu carrito.";
+                }
             };
         } catch (error) {
             response.statusCode = 500;

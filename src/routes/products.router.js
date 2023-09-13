@@ -2,7 +2,7 @@ import { Router } from "express";
 import ProductController from "../controllers/productsController.js";
 import passport from "passport";
 
-import { rolesMiddlewareAdmin } from "./middlewares/roles.middleware.js";
+import { rolesMiddlewareAdminAndPremiun } from "./middlewares/roles.middleware.js";
 
 const productsRouter = Router();
 let productController = new ProductController();

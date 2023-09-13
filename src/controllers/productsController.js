@@ -27,6 +27,14 @@ export default class ProductController {
         };
         let response = {};
         try {
+            const ownerRole = req.user.role;
+            let owner = ""
+            if (ownerRole === "premium") {
+                owner = req.user.userID;
+            } else if (ownerRole === "admin") {
+                owner = req.user.role;
+            }
+            productData.owner = owner
             const resultService = await this.productService.createProductService(productData);
             response.statusCode = resultService.statusCode;
             response.message = resultService.message;
@@ -125,7 +133,9 @@ export default class ProductController {
         };
         let response = {};
         try {
-            const resultService = await this.productService.deleteProductService(pid);
+            const ownerRole = req.user.role;
+            const owner = ownerRole === "premium" ? req.user.userID : ownerRole === "admin" ? req.user.role : undefined;
+            const resultService = await this.productService.deleteProductService(pid, owner);
             response.statusCode = resultService.statusCode;
             response.message = resultService.message;
             if (resultService.statusCode === 500) {
@@ -133,7 +143,6 @@ export default class ProductController {
             } else if (resultService.statusCode === 404) {
                 req.logger.warn(response.message);
             } else if (resultService.statusCode === 200) {
-                response.result = resultService.result;
                 const products = await this.productService.getAllProductsService();
                 req.socketServer.sockets.emit('products', products.result);
                 req.logger.debug(response.message);
@@ -170,15 +179,16 @@ export default class ProductController {
         };
         let response = {};
         try {
-            const resultService = await this.productService.updateProductService(pid, updatedFields);
+            const ownerRole = req.user.role;
+            const owner = ownerRole === "premium" ? req.user.userID : ownerRole === "admin" ? req.user.role : undefined;
+            const resultService = await this.productService.updateProductService(pid, updatedFields, owner);
             response.statusCode = resultService.statusCode;
             response.message = resultService.message;
             if (resultService.statusCode === 500) {
                 req.logger.error(response.message);
-            } else if (resultService.statusCode === 404) {
+            } else if (resultService.statusCode === 404 || resultService.statusCode === 401) {
                 req.logger.warn(response.message);
             } else if (resultService.statusCode === 200) {
-                response.result = resultService.result;
                 const products = await this.productService.getAllProductsService();
                 req.socketServer.sockets.emit('products', products.result);
                 req.logger.debug(response.message);

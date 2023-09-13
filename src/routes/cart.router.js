@@ -33,21 +33,21 @@ cartRouter.post('/:cid/products/:pid/quantity/:quantity', passport.authenticate(
   };
 });
 
-cartRouter.post('/:cid/purchase', async (req, res, next) => {
+cartRouter.post('/:cid/purchase', passport.authenticate('jwt', { session: false }), rolesMiddlewareUser, async (req, res, next) => {
   const result = await cartController.purchaseProductsInCartController(req, res, next);
   if(result !== undefined) {
     res.status(result.statusCode).send(result);
   };
-});
+})
 
-cartRouter.delete('/:cid/products/:pid', async (req, res, next) => {
+cartRouter.delete('/:cid/products/:pid', passport.authenticate('jwt', { session: false }), rolesMiddlewareUser, async (req, res, next) => {
   const result = await cartController.deleteProductFromCartController(req, res, next);
   if(result !== undefined) {
     res.status(result.statusCode).send(result);
   };
 })
 
-cartRouter.delete('/:cid', async (req, res, next) => {
+cartRouter.delete('/:cid', passport.authenticate('jwt', { session: false }), rolesMiddlewareUser, async (req, res, next) => {
   const result = await cartController.deleteAllProductsFromCartController(req, res, next);
   if(result !== undefined) {
     res.status(result.statusCode).send(result);
@@ -61,7 +61,7 @@ cartRouter.put('/:cid', passport.authenticate('jwt', { session: false }), rolesM
   };
 });
 
-cartRouter.put('/:cid/products/:pid', async (req, res, next) => {
+cartRouter.put('/:cid/products/:pid', passport.authenticate('jwt', { session: false }), rolesMiddlewareUser, async (req, res, next) => {
   const result = await cartController.updateProductInCartController(req, res, next);
   if(result !== undefined) {
     res.status(result.statusCode).send(result);
