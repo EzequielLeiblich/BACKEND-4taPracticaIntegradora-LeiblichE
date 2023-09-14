@@ -114,7 +114,7 @@ export const authenticateWithGitHub = (req, res, next) => {
         } else if (user) {
             const userSemiCompleto = await createBDUserGH(req, res, user, next);
             if (userSemiCompleto.password === "Sin contraseña.") {
-                res.cookie(envCoderUserIDCookie, userSemiCompleto._id, {
+                res.cookie(config.JWT_USER, userSemiCompleto._id, {
                     httpOnly: true,
                     signed: true,
                     maxAge: 1 * 60 * 1000

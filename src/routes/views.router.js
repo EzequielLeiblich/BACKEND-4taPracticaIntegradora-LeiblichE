@@ -43,4 +43,41 @@ viewsRouter.get('/completeProfile', (req, res) => {
   })
 });
 
+viewsRouter.get('/requestResetPassword', (req, res) => {
+  res.render('requestResetPassword', {
+    title: 'Restablecer Contraseña - Solicitar Correo'
+  })
+})
+
+viewsRouter.get('/resetPassword', passport.authenticate('jwtResetPass', {
+  session: false,
+  failureRedirect: '/requestResetPassword'
+}), (req, res) => {
+  res.render('resetPassword', {
+    title: 'Restablecer Contraseña'
+  })
+})
+
+viewsRouter.get('/adminPanel', passport.authenticate('jwt', {
+  session: false
+}), rolesMiddlewareAdmin, (req, res) => {
+  res.render('userAdmin', {
+    title: 'Panel de administrador'
+  })
+})
+
+viewsRouter.get('/adminPanel', passport.authenticate('jwt', {
+  session: false
+}), rolesMiddlewareAdmin, (req, res) => {
+  res.render('userAdmin', {
+    title: 'Panel de administrador'
+  })
+})
+
+viewsRouter.get('/premiumView', passport.authenticate('jwt', {session: false}), rolesMiddlewareUserPremium, (req, res) => {
+  res.render('userPremium', {
+    title: 'Premium View'
+  })
+})
+
 export default viewsRouter;

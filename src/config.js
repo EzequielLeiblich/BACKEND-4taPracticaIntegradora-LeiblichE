@@ -39,5 +39,6 @@ export default {
   PORT_TRANSPORT: process.env.PORT_TRANSPORT,
   AUTH_USER_TRANSPORT: process.env.AUTH_USER_TRANSPORT,
   AUTH_PASS_TRANSPORT: process.env.AUTH_PASS_TRANSPORT,
+  // Token Request Pass
   RESET_PASSWORD_TOKEN: process.env.RESET_PASSWORD_TOKEN
 }

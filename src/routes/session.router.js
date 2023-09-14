@@ -1,10 +1,11 @@
 import { Router } from "express";
 import passport from "passport";
 import {completeProfile} from '../config/formExtra.js'
-
 import { registerUser, loginUser, getCurrentUser, authenticateWithGitHub, getProfileUser} from './middlewares/passport.middleware.js';
+import SessionController from '../controllers/sessionController.js';
 
 const sessionRouter = Router();
+let sessionController = new SessionController();
 
 // REGISTRO
 sessionRouter.post('/register', registerUser);

@@ -1,7 +1,9 @@
 import SessionDAO from "../DAO/mongodb/SessionMongo.dao.js";
 import Mail from '../email/nodemailer.js'
 import jwt from 'jsonwebtoken';
+import { createHash, isValidPassword } from "../utils.js";
 import config from "../../config.js";
+
 export default class SessionService {
     constructor() {
         this.sessionDAO = new SessionDAO();
@@ -85,7 +87,7 @@ export default class SessionService {
                 const user = resultDAO.result;
                 let token = jwt.sign({
                     email
-                }, envResetPassToken, {
+                }, config.RESET_PASSWORD_TOKEN, {
                     expiresIn: '1h'
                 })
                 let html = `
@@ -153,9 +155,7 @@ export default class SessionService {
                     response.message = `La nueva contraseña que has proporcionado es idéntica a tu contraseña actual. Para restablecer la contraseña, por favor introduce una contraseña diferente. Si prefieres mantener tu contraseña actual, puedes iniciar sesión utilizando tus credenciales habituales haciendo clic en "Iniciar sesión".`;
                 } else {
                     const password = createHash(newPass);
-                    const updateUser = {
-                        password
-                    };
+                    const updateUser = { password };
                     const resultUpdt = await this.sessionDAO.updateUser(user._id, updateUser);
                     if (resultUpdt.status === "error") {
                         response.statusCode = 500;
